@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AVIA CALCULATOR</title>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a2a43'/%3E%3Crect x='0' y='0' width='100' height='14' fill='%23c8102e'/%3E%3Ctext x='50' y='52' font-family='Arial, sans-serif' font-size='24' font-weight='900' fill='%23ffffff' text-anchor='middle' letter-spacing='0'%3EAVIA%3C/text%3E%3Ctext x='50' y='75' font-family='Arial, sans-serif' font-size='12' font-weight='700' fill='%2393c5fd' text-anchor='middle' letter-spacing='0'%3ECALCULATOR%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a2a43'/%3E%3Crect x='0' y='0' width='100' height='14' fill='%23c8102e'/%3E%3Ctext x='50' y='52' font-family='Arial, sans-serif' font-size='24' font-weight='900' fill='%23ffffff' text-anchor='middle' letter-spacing='0'%3EAVIA%3C/text%3E%3Ctext x='50' y='75' font-family='Arial, sans-serif' font-size='12' font-weight='700' fill='%2393c5fd' text-anchor='middle' letter-spacing='0'%3ECALCULATOR%3C/text%3E%3C/svg%3E">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: #0f172a;
+      color: #f8fafc;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 12px);
+      overflow-x: hidden;
+    }
+    
+    .app {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: max-width 0.3s ease;
+      padding-bottom: 20px;
+    }
+
+    /* === Шапка === */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 0 0 4px;
+    }
+    .title-badge {
+      position: relative;
+      width: 100%;
+      padding: 16px 20px 14px;
+      background: linear-gradient(135deg, #0a2a43 0%, #0f3a5f 100%);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 6px 20px -6px rgba(10, 42, 67, 0.8);
+    }
+    .title-badge::before {
+      content: '';
+      position: absolute;
+      right: -20px;
+      bottom: -30px;
+      width: 120px;
+      height: 120px;
+      background: #c8102e;
+      border-radius: 50%;
+      opacity: 0.18;
+      transform: rotate(-15deg);
+    }
+    .title-badge::after {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: -30px;
+      width: 100px;
+      height: 100px;
+      background: #3b82f6;
+      border-radius: 50%;
+      opacity: 0.12;
+    }
+    .title-main {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+      line-height: 1.1;
+      text-align: center;
+    }
+    .title-main .accent {
+      color: #c8102e;
+      position: relative;
+      display: inline-block;
+    }
+    .title-main .accent::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      height: 3px;
+      background: #c8102e;
+      border-radius: 2px;
+      transform: skewX(-20deg);
+    }
+    .title-sub {
+      position: relative;
+      z-index: 1;
+      margin-top: 6px;
+      font-size: 0.62rem;
+      letter-spacing: 4px;
+      color: #93c5fd;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .credit {
+      font-size: 0.65rem;
+      color: #475569;
+      letter-spacing: 0.6px;
+      text-align: center;
+    }
+
+    /* === Главные вкладки === */
+    .main-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+    .main-tab-btn {
+      flex: 1;
+      padding: 10px 2px;
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      border-radius: 10px;
+      color: #94a3b8;
+      font-size: clamp(0.55rem, 2vw, 0.65rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .main-tab-btn:active {
+      transform: scale(0.95);
+      background: #334155;
+    }
+    .main-tab-btn.active {
+      background: #c8102e;
+      border-color: #c8102e;
+      color: #ffffff;
+      box-shadow: 0 3px 8px -3px rgba(200, 16, 46, 0.4);
+    }
+    .main-tab-btn.active:active {
+      background: #a00c24;
+    }
+
+    /* === Подвкладки (Fuel) === */
+    .sub-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .sub-tab-btn {
+      flex: 1;
+      padding: 6px 8px;
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      border-radius: 10px;
+      color: #94a3b8;
+      font-size: clamp(0.6rem, 2vw, 0.7rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .sub-tab-btn:active {
+      transform: scale(0.95);
+      background: #334155;
+    }
+    .sub-tab-btn.active {
+      background: #c8102e;
+      border-color: #c8102e;
+      color: #ffffff;
+      box-shadow: 0 3px 8px -3px rgba(200, 16, 46, 0.4);
+    }
+    .sub-tab-btn.active:active {
+      background: #a00c24;
+    }
+
+    /* === Общие стили === */
+    .main-tab-content { display: none; flex-direction: column; gap: 14px; }
+    .main-tab-content.active { display: flex; }
+    .sub-tab-content { display: none; flex-direction: column; gap: 14px; }
+    .sub-tab-content.active { display: flex; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      scroll-margin-top: 20px;
+    }
+    .field label {
+      font-size: clamp(0.7rem, 2vw, 0.78rem);
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      padding-left: 2px;
+      transition: color 0.2s;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 16px 18px;
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      border-radius: 16px;
+      color: #f8fafc;
+      font-size: clamp(1.1rem, 3vw, 1.25rem);
+      font-weight: 600;
+      text-align: right;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.2s, color 0.2s;
+      font-variant-numeric: tabular-nums;
+      appearance: none;
+    }
+    .field input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+    }
+    .field select {
+      text-align: left;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: left 18px center;
+      background-size: 16px;
+      padding-left: 44px;
+    }
+    .field input:read-only {
+      color: #93c5fd;
+      border-color: #1e40af;
+      background: #172033;
+    }
+    .field input[type=number]::-webkit-outer-spin-button,
+    .field input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .field input[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    
+    .field input::placeholder {
+      color: #475569;
+      font-weight: 400;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      width: 100%;
+    }
+    
+    .input-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+    .input-row .field {
+      flex: 1;
+    }
+
+    /* === Подсветки === */
+    .field.field-green label { color: #86efac; }
+    .field.field-green input {
+      border-color: #22c55e;
+      background: #14281d;
+      color: #86efac;
+      cursor: default;
+    }
+    
+    .field.field-blue-active label { color: #bfdbfe; }
+    .field.field-blue-active input,
+    .field.field-blue-active input:read-only {
+      background: #0f2946;
+      border-color: #2563eb;
+      color: #bfdbfe;
+      box-shadow: 0 0 0 1.5px #3b82f6, 0 4px 12px -4px rgba(59, 130, 246, 0.3);
+    }
+    .field.field-blue-active input:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 1.5px #60a5fa, 0 0 0 5px rgba(59, 130, 246, 0.2);
+    }
+
+    .field.field-green-active label { color: #bbf7d0; }
+    .field.field-green-active input {
+      background: #0a3d1f;
+      border-color: #16a34a;
+      color: #bbf7d0;
+      cursor: default;
+      box-shadow: 0 0 0 1.5px #22c55e, 0 4px 12px -4px rgba(34, 197, 94, 0.3);
+    }
+
+    .field.field-red-active label { color: #fecaca; }
+    .field.field-red-active input,
+    .field.field-red-active input:read-only {
+      background: #450a0a;
+      border-color: #dc2626;
+      color: #fecaca;
+      box-shadow: 0 0 0 1.5px #ef4444, 0 4px 12px -4px rgba(239, 68, 68, 0.3);
+    }
+
+    .divider {
+      margin: 8px 0 4px;
+      height: 1px;
+      background: #334155;
+      border: none;
+      width: 100%;
+    }
+
+    .reset-btn {
+      margin-top: 8px;
+      width: 100%;
+      padding: 16px 18px;
+      background: transparent;
+      border: 1.5px solid #475569;
+      border-radius: 16px;
+      color: #cbd5e1;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s, color 0.1s, transform 0.1s;
+    }
+    .reset-btn:active {
+      background: #1e293b;
+      border-color: #64748b;
+      color: #f8fafc;
+      transform: scale(0.95);
+    }
+
+    .wind-info-text, .dow-info-text, .temp-info-text {
+      font-size: clamp(0.7rem, 2vw, 0.75rem);
+      color: #94a3b8;
+      text-align: center;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .wind-alert { color: #f87171; font-weight: 600; }
+    .dow-alert { color: #fbbf24; font-weight: 600; margin-top: 4px; display: block; }
+    
+    /* Детали расчета в DOW */
+    .calc-details {
+      text-align: left;
+      background: #1e293b;
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: clamp(0.7rem, 2vw, 0.75rem);
+      border: 1.5px solid #334155;
+      transition: all 0.3s ease;
+    }
+    .calc-details div { margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .calc-details div:last-child { margin-bottom: 0; border-top: 1px solid #334155; padding-top: 6px; font-weight: bold; color: #f8fafc;}
+    
+    /* Синяя подсветка для блока деталей */
+    .calc-details.active {
+      border-color: #3b82f6;
+      background: #0f2946;
+      box-shadow: 0 0 0 1.5px #3b82f6, 0 4px 12px -4px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Стили для Temp Corr */
+    .tc-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+      background: #1e293b;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1.5px solid #334155;
+      width: 100%;
+      scroll-margin-top: 20px;
+    }
+    .tc-group label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      padding-left: 4px;
+      font-weight: 600;
+    }
+    .tc-input-group {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+      width: 100%;
+    }
+    
+    .tc-input-group input {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      border-radius: 8px;
+      height: 44px;
+      text-align: right;
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      color: #f8fafc;
+      font-weight: 600;
+      outline: none;
+      font-variant-numeric: tabular-nums;
+      transition: all 0.2s;
+    }
+    .tc-input-group input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+    }
+    .tc-input-group input::placeholder {
+      color: #475569;
+      font-weight: 400;
+    }
+    
+    .tc-final-value {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f2946;
+      border: 1.5px solid #c8102e;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: clamp(1rem, 3vw, 1.15rem);
+      font-weight: 800;
+      color: #ef4444;
+      height: 44px;
+      box-shadow: 0 0 0 1.5px #3b82f6;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .tc-final-value.empty {
+      color: #475569;
+      border-color: #334155;
+      box-shadow: none;
+      background: #1e293b;
+    }
+
+    .tc-badges {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .tc-badge {
+      flex: 1;
+      font-size: clamp(0.6rem, 2vw, 0.65rem);
+      padding: 4px;
+      border-radius: 6px;
+      text-align: center;
+      border: 1px solid #3b82f6;
+      color: #93c5fd;
+      background: #0f2946;
+      transition: all 0.3s ease;
+    }
+    .tc-badge.active {
+      border-color: #22c55e;
+      color: #bbf7d0;
+      background: #0a3d1f;
+    }
+
+    /* === АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ === */
+    @media (min-width: 768px) {
+      .app {
+        max-width: 900px;
+        padding: 30px 40px;
+        gap: 20px;
+      }
+      
+      .input-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .input-row {
+        gap: 16px;
+      }
+      
+      .field input, .field select {
+        padding: 18px 20px;
+      }
+
+      #main-temp.active {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+      #main-temp .tc-group:nth-child(n+3) {
+        grid-column: span 1;
+      }
+      #main-temp .divider {
+        grid-column: span 2;
+      }
+      #main-temp #tcFieldTemp,
+      #main-temp #tcFieldElev {
+        grid-column: span 1;
+      }
+      #main-temp #tcInfo {
+        grid-column: span 2;
+      }
+      #main-temp .reset-btn {
+        grid-column: span 2;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .app {
+        max-width: 1100px;
+      }
+      #main-temp.active {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      #main-temp #tcFieldTemp,
+      #main-temp #tcFieldElev,
+      #main-temp .divider,
+      #main-temp #tcInfo,
+      #main-temp .reset-btn {
+        grid-column: span 3;
+      }
+      #main-temp .tc-group:nth-child(n+3) {
+        grid-column: span 1;
+      }
+    }
+
+    /* Горизонтальная ориентация на телефонах */
+    @media (max-height: 600px) and (orientation: landscape) and (max-width: 767px) {
+      .app { padding-top: 8px; gap: 8px; }
+      .header { flex-direction: row; justify-content: space-between; padding: 0; gap: 12px; }
+      .title-badge { padding: 10px 16px; }
+      .title-main { font-size: 1.1rem; }
+      .field input, .field select { padding: 10px 14px; font-size: 1rem; }
+      .reset-btn { padding: 10px 14px; }
+      .tc-input-group input { height: 40px; font-size: 0.9rem; }
+      .tc-final-value { height: 40px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="appContainer">
+    <div class="header">
+      <div class="title-badge">
+        <div class="title-main">AVIA <span class="accent">CALCULATOR</span></div>
+        <div class="title-sub">AZUR AIR</div>
+      </div>
+      <div class="credit">by Denis Gorelskii</div>
+    </div>
+
+    <!-- ГЛАВНЫЕ ВКЛАДКИ -->
+    <div class="main-tabs">
+      <button class="main-tab-btn active" id="btnMainFuel" onclick="switchMainTab('main-fuel', this)">Fuel</button>
+      <button class="main-tab-btn" id="btnMainDow" onclick="switchMainTab('main-dow', this)">DOW/DOI</button>
+      <button class="main-tab-btn" id="btnMainWind" onclick="switchMainTab('main-wind', this)">Wind</button>
+      <button class="main-tab-btn" id="btnMainTemp" onclick="switchMainTab('main-temp', this)">Temp</button>
+    </div>
+
+    <!-- ==================== FUEL ==================== -->
+    <div id="main-fuel" class="main-tab-content active">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" id="btnTab1" onclick="switchSubTab('tab1', this)">Одно требование</button>
+        <button class="sub-tab-btn" id="btnTab2" onclick="switchSubTab('tab2', this)">Два требования</button>
+      </div>
+
+      <div id="fuelSwipeArea">
+        <!-- Fuel 1 -->
+        <div id="tab1" class="sub-tab-content active">
+          <div class="field">
+            <label for="remainingFuel">REMAINING FUEL (Kg)</label>
+            <input type="number" id="remainingFuel" step="1" min="0" inputmode="decimal" placeholder="">
+          </div>
+          <div class="field field-green" id="fieldFuelUsed">
+            <label for="fuelUsed">MAINT FUEL USED (Kg)</label>
+            <input type="text" id="fuelUsed" readonly placeholder="" tabindex="-1">
+          </div>
+          <div class="field field-green" id="fieldBefore">
+            <label for="before">BEFORE UPLIFT (kg)</label>
+            <input type="text" id="before" readonly placeholder="" tabindex="-1">
+          </div>
+          <div class="input-grid">
+            <div class="field" id="fieldAddedLt">
+              <label for="addedLt">ADDED (Lt)</label>
+              <input type="number" id="addedLt" step="0.1" min="0" inputmode="decimal" placeholder="">
+            </div>
+            <div class="field" id="fieldDensity">
+              <label for="density">DENSITY</label>
+              <input type="text" id="density" inputmode="decimal" placeholder="" autocomplete="off">
+            </div>
+            <div class="field" id="fieldAddedKg">
+              <label for="addedKg">ADDED (Kg)</label>
+              <input type="text" id="addedKg" readonly placeholder="" tabindex="-1">
+            </div>
+            <div class="field" id="fieldIndicated">
+              <label for="indicatedTotal">INDICATED TOTAL (Kg)</label>
+              <input type="number" id="indicatedTotal" step="1" min="0" inputmode="decimal" placeholder="">
+            </div>
+          </div>
+          <hr class="divider">
+          <button type="button" class="reset-btn" onclick="resetSingle()">Сброс</button>
+        </div>
+
+        <!-- Fuel 2 -->
+        <div id="tab2" class="sub-tab-content">
+          <div class="field">
+            <label for="remainingFuel2">REMAINING FUEL (Kg)</label>
+            <input type="number" id="remainingFuel2" step="1" min="0" inputmode="decimal" placeholder="">
+          </div>
+          <div class="field field-green" id="fieldFuelUsed2">
+            <label for="fuelUsed2">MAINT FUEL USED (Kg)</label>
+            <input type="text" id="fuelUsed2" readonly placeholder="" tabindex="-1">
+          </div>
+          <div class="field field-green" id="fieldBefore2">
+            <label for="before2">BEFORE UPLIFT (kg)</label>
+            <input type="text" id="before2" readonly placeholder="" tabindex="-1">
+          </div>
+          <div class="input-grid">
+            <div class="field" id="fieldAddedLt2">
+              <label for="addedLt2">1. ADDED (Lt)</label>
+              <input type="number" id="addedLt2" step="0.1" min="0" inputmode="decimal" placeholder="">
+            </div>
+            <div class="field" id="fieldAddedLt2b">
+              <label for="addedLt2b">2. ADDED (Lt)</label>
+              <input type="number" id="addedLt2b" step="0.1" min="0" inputmode="decimal" placeholder="">
+            </div>
+            <div class="field" id="fieldDensity2">
+              <label for="density2">1. DENSITY</label>
+              <input type="text" id="density2" inputmode="decimal" placeholder="" autocomplete="off">
+            </div>
+            <div class="field" id="fieldDensity2b">
+              <label for="density2b">2. DENSITY</label>
+              <input type="text" id="density2b" inputmode="decimal" placeholder="" autocomplete="off">
+            </div>
+          </div>
+          <div class="field" id="fieldAddedKg2">
+            <label for="addedKg2">ADDED (Kg)</label>
+            <input type="text" id="addedKg2" readonly placeholder="" tabindex="-1">
+          </div>
+          <div class="field" id="fieldIndicated2">
+            <label for="indicatedTotal2">INDICATED TOTAL (Kg)</label>
+            <input type="number" id="indicatedTotal2" step="1" min="0" inputmode="decimal" placeholder="">
+          </div>
+          <hr class="divider">
+          <button type="button" class="reset-btn" onclick="resetDouble()">Сброс</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== DOW/DOI ==================== -->
+    <div id="main-dow" class="main-tab-content">
+      <div class="input-grid">
+        <div class="field">
+          <label for="dowReg">Aircraft Reg</label>
+          <select id="dowReg" onchange="populateCrewCodes()">
+            <option value="" disabled selected>Выберите борт...</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="dowCrew">Crew Code</label>
+          <select id="dowCrew" onchange="calculateDow()">
+            <option value="" disabled selected>Сначала выберите борт...</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="dowPantry">Pantry Code</label>
+          <select id="dowPantry" onchange="calculateDow()">
+            <option value="" disabled selected>Сначала выберите борт...</option>
+          </select>
+        </div>
+
+        <div class="field" id="dowFieldFlyaway">
+          <label for="dowFlyaway">Fly-away Kit (Fact kg)</label>
+          <input type="number" id="dowFlyaway" min="0" inputmode="decimal" placeholder="250 kg included" oninput="calculateDow()">
+        </div>
+
+        <div class="field field-green" id="dowFieldDow">
+          <label for="dowVal">DOW (Kg)</label>
+          <input type="text" id="dowVal" readonly placeholder="" tabindex="-1">
+        </div>
+
+        <div class="field field-green" id="dowFieldDoi">
+          <label for="doiVal">DOI</label>
+          <input type="text" id="doiVal" readonly placeholder="" tabindex="-1">
+        </div>
+
+        <div class="field" id="dowFieldConfig">
+          <label for="dowConfig">Configuration</label>
+          <input type="text" id="dowConfig" readonly placeholder="" tabindex="-1">
+        </div>
+      </div>
+
+      <div id="dowInfo" class="dow-info-text">Выберите параметры для расчета.</div>
+      <hr class="divider">
+      <button type="button" class="reset-btn" onclick="resetDow()">Сброс</button>
+    </div>
+
+    <!-- ==================== WIND ==================== -->
+    <div id="main-wind" class="main-tab-content">
+      <div class="input-grid">
+        <div class="field" id="wFieldDir">
+          <label for="wDir">Wind Dir (°)</label>
+          <input type="number" id="wDir" step="1" min="0" max="360" inputmode="decimal" placeholder="">
+        </div>
+        <div class="field" id="wFieldRwy">
+          <label for="wRwy">Rwy Course (°)</label>
+          <input type="number" id="wRwy" step="1" min="0" max="360" inputmode="decimal" placeholder="">
+        </div>
+        <div class="field" id="wFieldSpd">
+          <label for="wSpd">Avg Wind</label>
+          <input type="number" id="wSpd" step="0.1" min="0" inputmode="decimal" placeholder="">
+        </div>
+        <div class="field" id="wFieldGust">
+          <label for="wGust">Gust</label>
+          <input type="number" id="wGust" step="0.1" min="0" inputmode="decimal" placeholder="">
+        </div>
+        <div class="field" id="wFieldUnit">
+          <label for="wUnit">Units</label>
+          <select id="wUnit">
+            <option value="ms">m/s</option>
+            <option value="kt">Knots</option>
+          </select>
+        </div>
+        <div class="field" id="wFieldMu">
+          <label for="wMu">Measured Braking Coeff (MBC)</label>
+          <input type="number" id="wMu" step="0.01" min="0" max="1" inputmode="decimal" placeholder="">
+        </div>
+        <div class="field field-green" id="wFieldCross">
+          <label for="wCross">Crosswind</label>
+          <input type="text" id="wCross" readonly placeholder="" tabindex="-1">
+        </div>
+        <div class="field field-green" id="wFieldLong">
+          <label for="wLong">Head/Tailwind</label>
+          <input type="text" id="wLong" readonly placeholder="" tabindex="-1">
+        </div>
+      </div>
+
+      <div id="wInfo" class="wind-info-text">Введите данные для расчета.</div>
+      <hr class="divider">
+      <button type="button" class="reset-btn" onclick="resetWind()">Сброс</button>
+    </div>
+
+    <!-- ==================== TEMP CORRECTION ==================== -->
+    <div id="main-temp" class="main-tab-content">
+      <div class="field" id="tcFieldTemp">
+        <label for="tcTemp">Airport Temp (°C)</label>
+        <input type="text" id="tcTemp" inputmode="text" value="" oninput="handleTempInput()" placeholder="Enter temp">
+      </div>
+
+      <div class="field" id="tcFieldElev">
+        <label for="tcElev">Airport Elevation (ft)</label>
+        <input type="number" id="tcElev" min="0" inputmode="decimal" placeholder="" oninput="calculateTemp()">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="tc-group">
+        <label for="tcIaf">IAF (ft)</label>
+        <div class="tc-input-group">
+          <input type="number" id="tcIaf" inputmode="decimal" placeholder="Published Alt" oninput="calculateTemp()">
+          <div class="tc-final-value empty" id="tcIafFinal">—</div>
+        </div>
+        <div class="tc-badges">
+          <div class="tc-badge" id="tcIafHeight">Height: —</div>
+          <div class="tc-badge" id="tcIafCorr">Corr: 0 ft</div>
+        </div>
+      </div>
+
+      <div class="tc-group">
+        <label for="tcFaf">FAF (ft)</label>
+        <div class="tc-input-group">
+          <input type="number" id="tcFaf" inputmode="decimal" placeholder="Published Alt" oninput="calculateTemp()">
+          <div class="tc-final-value empty" id="tcFafFinal">—</div>
+        </div>
+        <div class="tc-badges">
+          <div class="tc-badge" id="tcFafHeight">Height: —</div>
+          <div class="tc-badge" id="tcFafCorr">Corr: 0 ft</div>
+        </div>
+      </div>
+
+      <div class="tc-group">
+        <label for="tcStep">Step-down (ft)</label>
+        <div class="tc-input-group">
+          <input type="number" id="tcStep" inputmode="decimal" placeholder="Published Alt" oninput="calculateTemp()">
+          <div class="tc-final-value empty" id="tcStepFinal">—</div>
+        </div>
+        <div class="tc-badges">
+          <div class="tc-badge" id="tcStepHeight">Height: —</div>
+          <div class="tc-badge" id="tcStepCorr">Corr: 0 ft</div>
+        </div>
+      </div>
+
+      <div class="tc-group">
+        <label for="tcMda">MDA / DA (ft)</label>
+        <div class="tc-input-group">
+          <input type="number" id="tcMda" inputmode="decimal" placeholder="Published Alt" oninput="calculateTemp()">
+          <div class="tc-final-value empty" id="tcMdaFinal">—</div>
+        </div>
+        <div class="tc-badges">
+          <div class="tc-badge" id="tcMdaHeight">Height: —</div>
+          <div class="tc-badge" id="tcMdaCorr">Corr: 0 ft</div>
+        </div>
+      </div>
+
+      <div class="tc-group">
+        <label for="tcMissed">Missed Approach (ft)</label>
+        <div class="tc-input-group">
+          <input type="number" id="tcMissed" inputmode="decimal" placeholder="Published Alt" oninput="calculateTemp()">
+          <div class="tc-final-value empty" id="tcMissedFinal">—</div>
+        </div>
+        <div class="tc-badges">
+          <div class="tc-badge" id="tcMissedHeight">Height: —</div>
+          <div class="tc-badge" id="tcMissedCorr">Corr: 0 ft</div>
+        </div>
+      </div>
+
+      <div id="tcInfo" class="temp-info-text">Введите температуру, высоту аэродрома и высоты для расчета.</div>
+      <hr class="divider">
+      <button type="button" class="reset-btn" onclick="resetTemp()">Сброс</button>
+    </div>
+
+  </div>
+
+  <!-- Скрипты -->
+  <script>
+    // === PWA / OFFLINE ===
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE_NAME = 'avia-calc-v1';
+        self.addEventListener('install', (e) => { self.skipWaiting(); });
+        self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
+        self.addEventListener('fetch', (e) => {
+          e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    }
+
+    const manifest = {
+      name: "AVIA CALCULATOR",
+      short_name: "AVIA CALC",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#0f172a",
+      theme_color: "#0f172a",
+      icons: [{
+        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a2a43'/%3E%3Crect x='0' y='0' width='100' height='14' fill='%23c8102e'/%3E%3Ctext x='50' y='52' font-family='Arial, sans-serif' font-size='24' font-weight='900' fill='%23ffffff' text-anchor='middle' letter-spacing='0'%3EAVIA%3C/text%3E%3Ctext x='50' y='75' font-family='Arial, sans-serif' font-size='12' font-weight='700' fill='%2393c5fd' text-anchor='middle' letter-spacing='0'%3ECALCULATOR%3C/text%3E%3C/svg%3E",
+        sizes: "100x100",
+        type: "image/svg+xml"
+      }]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestUrl = URL.createObjectURL(manifestBlob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = manifestUrl;
+    document.head.appendChild(link);
+
+    // === ОСНОВНАЯ ЛОГИКА ===
+
+    function switchMainTab(tabId, btnElement) {
+      document.querySelectorAll('.main-tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.main-tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (btnElement) btnElement.classList.add('active');
+    }
+
+    let currentSubTab = 'tab1';
+    function switchSubTab(tabId, btnElement) {
+      currentSubTab = tabId;
+      document.querySelectorAll('.sub-tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+    }
+
+    let touchStartX = 0, touchEndX = 0;
+    const fuelSwipeArea = document.getElementById('fuelSwipeArea');
+    fuelSwipeArea.addEventListener('touchstart', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+    fuelSwipeArea.addEventListener('touchend', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchEndX - touchStartX;
+      const tabs = ['tab1', 'tab2'];
+      let idx = tabs.indexOf(currentSubTab);
+      if (diff < -50 && idx < tabs.length - 1) switchSubTab(tabs[idx + 1], document.getElementById(tabs[idx + 1] === 'tab1' ? 'btnTab1' : 'btnTab2'));
+      else if (diff > 50 && idx > 0) switchSubTab(tabs[idx - 1], document.getElementById(tabs[idx - 1] === 'tab1' ? 'btnTab1' : 'btnTab2'));
+    }, {passive: true});
+
+    // Fuel
+    function num(el) { const v = parseFloat(el.value); return isNaN(v) || !isFinite(v) ? 0 : v; }
+    function rnd(val) { const n = parseFloat(val); return isNaN(n) || !isFinite(n) ? 0 : Math.round(n); }
+    function isFilled(el) { const s = el.value.trim(); return s !== '' && !isNaN(parseFloat(s)); }
+    function has5Chars(el) { return el.value.trim().length === 5; }
+    function normalizeDensity(raw) {
+      let s = raw.replace(',', '.').replace(/[^0-9.]/g, '');
+      if (s.startsWith('.')) s = '0' + s;
+      const firstDot = s.indexOf('.');
+      if (firstDot !== -1) s = s.slice(0, firstDot + 1) + s.slice(firstDot + 1).replace(/\./g, '');
+      return s;
+    }
+
+    // Fuel 1
+    const remainingFuelInput = document.getElementById('remainingFuel');
+    const beforeInput = document.getElementById('before');
+    const addedLtInput = document.getElementById('addedLt');
+    const densityInput = document.getElementById('density');
+    const addedKgInput = document.getElementById('addedKg');
+    const indicatedTotalInput = document.getElementById('indicatedTotal');
+    const fuelUsedInput = document.getElementById('fuelUsed');
+    const fieldFuelUsed = document.getElementById('fieldFuelUsed');
+    const fieldBefore = document.getElementById('fieldBefore');
+    const fieldAddedLt = document.getElementById('fieldAddedLt');
+    const fieldDensity = document.getElementById('fieldDensity');
+    const fieldAddedKg = document.getElementById('fieldAddedKg');
+    const fieldIndicated = document.getElementById('fieldIndicated');
+
+    densityInput.addEventListener('input', () => {
+      const normalized = normalizeDensity(densityInput.value);
+      if (normalized !== densityInput.value) densityInput.value = normalized;
+      calculateSingle();
+    });
+
+    function calculateSingle() {
+      const addedLt = num(addedLtInput), density = num(densityInput), indicated = num(indicatedTotalInput), remaining = num(remainingFuelInput);
+      const addedKg = addedLt * density;
+      const allFilled = isFilled(remainingFuelInput) && isFilled(addedLtInput) && isFilled(densityInput) && has5Chars(indicatedTotalInput);
+      
+      addedKgInput.value = addedLt === 0 || density === 0 ? '' : String(rnd(addedKg));
+      [fieldFuelUsed, fieldBefore, fieldAddedLt, fieldDensity, fieldAddedKg, fieldIndicated].forEach(f => f.classList.remove('field-green-active', 'field-blue-active'));
+
+      if (!allFilled) { fuelUsedInput.value = ''; beforeInput.value = ''; return; }
+      const fuelUsed = Math.abs(rnd(indicated - (addedKg + remaining)));
+      const before = rnd(remaining - fuelUsed);
+      fuelUsedInput.value = String(fuelUsed);
+      beforeInput.value = String(before);
+      
+      fieldFuelUsed.classList.add('field-green-active');
+      [fieldBefore, fieldAddedLt, fieldDensity, fieldAddedKg, fieldIndicated].forEach(f => f.classList.add('field-blue-active'));
+    }
+
+    function resetSingle() {
+      [remainingFuelInput, addedLtInput, densityInput, indicatedTotalInput].forEach(el => el.value = '');
+      fuelUsedInput.value = ''; beforeInput.value = ''; addedKgInput.value = '';
+      [fieldFuelUsed, fieldBefore, fieldAddedLt, fieldDensity, fieldAddedKg, fieldIndicated].forEach(f => f.classList.remove('field-green-active', 'field-blue-active'));
+      remainingFuelInput.focus();
+    }
+    [remainingFuelInput, addedLtInput, indicatedTotalInput].forEach(input => input.addEventListener('input', calculateSingle));
+
+    // Fuel 2
+    const remainingFuelInput2 = document.getElementById('remainingFuel2');
+    const beforeInput2 = document.getElementById('before2');
+    const addedLtInput2 = document.getElementById('addedLt2');
+    const densityInput2 = document.getElementById('density2');
+    const addedLtInput2b = document.getElementById('addedLt2b');
+    const densityInput2b = document.getElementById('density2b');
+    const addedKgInput2 = document.getElementById('addedKg2');
+    const indicatedTotalInput2 = document.getElementById('indicatedTotal2');
+    const fuelUsedInput2 = document.getElementById('fuelUsed2');
+    const fieldFuelUsed2 = document.getElementById('fieldFuelUsed2');
+    const fieldBefore2 = document.getElementById('fieldBefore2');
+    const fieldAddedLt2 = document.getElementById('fieldAddedLt2');
+    const fieldDensity2 = document.getElementById('fieldDensity2');
+    const fieldAddedLt2b = document.getElementById('fieldAddedLt2b');
+    const fieldDensity2b = document.getElementById('fieldDensity2b');
+    const fieldAddedKg2 = document.getElementById('fieldAddedKg2');
+    const fieldIndicated2 = document.getElementById('fieldIndicated2');
+
+    function bindDensity(inputEl, calcFn) {
+      inputEl.addEventListener('input', () => {
+        const normalized = normalizeDensity(inputEl.value);
+        if (normalized !== inputEl.value) inputEl.value = normalized;
+        calcFn();
+      });
+    }
+    bindDensity(densityInput2, calculateDouble);
+    bindDensity(densityInput2b, calculateDouble);
+
+    function calculateDouble() {
+      const addedLt1 = num(addedLtInput2), density1 = num(densityInput2), addedLt2 = num(addedLtInput2b), density2 = num(densityInput2b);
+      const indicated = num(indicatedTotalInput2), remaining = num(remainingFuelInput2);
+      const addedKg = (addedLt1 * density1) + (addedLt2 * density2);
+      const allFilled = isFilled(remainingFuelInput2) && isFilled(addedLtInput2) && isFilled(densityInput2) && isFilled(addedLtInput2b) && isFilled(densityInput2b) && has5Chars(indicatedTotalInput2);
+      
+      addedKgInput2.value = addedKg === 0 ? '' : String(rnd(addedKg));
+      [fieldFuelUsed2, fieldBefore2, fieldAddedLt2, fieldDensity2, fieldAddedLt2b, fieldDensity2b, fieldAddedKg2, fieldIndicated2].forEach(f => f.classList.remove('field-green-active', 'field-blue-active'));
+
+      if (!allFilled) { fuelUsedInput2.value = ''; beforeInput2.value = ''; return; }
+      const fuelUsed = Math.abs(rnd(indicated - (addedKg + remaining)));
+      const before = rnd(remaining - fuelUsed);
+      fuelUsedInput2.value = String(fuelUsed);
+      beforeInput2.value = String(before);
+      
+      fieldFuelUsed2.classList.add('field-green-active');
+      [fieldBefore2, fieldAddedLt2, fieldDensity2, fieldAddedLt2b, fieldDensity2b, fieldAddedKg2, fieldIndicated2].forEach(f => f.classList.add('field-blue-active'));
+    }
+
+    function resetDouble() {
+      [remainingFuelInput2, addedLtInput2, densityInput2, addedLtInput2b, densityInput2b, indicatedTotalInput2].forEach(el => el.value = '');
+      fuelUsedInput2.value = ''; beforeInput2.value = ''; addedKgInput2.value = '';
+      [fieldFuelUsed2, fieldBefore2, fieldAddedLt2, fieldDensity2, fieldAddedLt2b, fieldDensity2b, fieldAddedKg2, fieldIndicated2].forEach(f => f.classList.remove('field-green-active', 'field-blue-active'));
+      remainingFuelInput2.focus();
+    }
+    [remainingFuelInput2, addedLtInput2, addedLtInput2b, indicatedTotalInput2].forEach(input => input.addEventListener('input', calculateDouble));
+
+    // Wind
+    const KT_TO_MS = 0.514444, LIMIT_TAILWIND_KT = 10;
+    const TABLE = [
+      { code: 6, action: "—", muMin: 0.62, muMax: 9.99, limitKt: 40, limitMs: 20.5 },
+      { code: 5, action: "Good", muMin: 0.40, muMax: 0.61, limitKt: 40, limitMs: 20.5 },
+      { code: 4, action: "Good to Medium", muMin: 0.36, muMax: 0.39, limitKt: 35, limitMs: 18.0 },
+      { code: 3, action: "Medium", muMin: 0.30, muMax: 0.35, limitKt: 25, limitMs: 12.8 },
+      { code: 2, action: "Medium to Poor", muMin: 0.26, muMax: 0.29, limitKt: 17, limitMs: 8.7 },
+      { code: 1, action: "Poor", muMin: 0.17, muMax: 0.25, limitKt: 15, limitMs: 7.7 },
+      { code: 0, action: "Nil", muMin: -1, muMax: 0.169, limitKt: 0, limitMs: 0 }
+    ];
+    const wDir = document.getElementById('wDir'), wRwy = document.getElementById('wRwy'), wSpd = document.getElementById('wSpd'), wGust = document.getElementById('wGust'), wUnit = document.getElementById('wUnit'), wMu = document.getElementById('wMu');
+    const wCross = document.getElementById('wCross'), wLong = document.getElementById('wLong'), wInfo = document.getElementById('wInfo');
+    const wFieldCross = document.getElementById('wFieldCross'), wFieldLong = document.getElementById('wFieldLong');
+
+    function calculateWind() {
+      const dirVal = wDir.value, rwyVal = wRwy.value, spdVal = wSpd.value, gustVal = wGust.value, muVal = wMu.value;
+      wFieldCross.classList.remove('field-green-active', 'field-red-active');
+      wFieldLong.classList.remove('field-green-active', 'field-red-active');
+
+      if (dirVal === '' || rwyVal === '' || spdVal === '') {
+        wCross.value = ''; wLong.value = ''; wInfo.innerHTML = 'Введите данные для расчета.'; return;
+      }
+      const dir = parseFloat(dirVal) || 0, spdAvg = parseFloat(spdVal) || 0, rwy = parseFloat(rwyVal) || 0;
+      let spdGust = parseFloat(gustVal); if (isNaN(spdGust)) spdGust = 0;
+      
+      const effectiveSpd = (spdGust > spdAvg) ? spdGust : spdAvg;
+      const isGustUsed = effectiveSpd > spdAvg;
+      const spdKt = wUnit.value === 'kt' ? effectiveSpd : effectiveSpd / KT_TO_MS;
+      const spdMs = wUnit.value === 'ms' ? effectiveSpd : effectiveSpd * KT_TO_MS;
+      
+      let delta = (dir - rwy + 360) % 360; if (delta > 180) delta -= 360;
+      const rad = delta * Math.PI / 180;
+      const crossKt = Math.abs(spdKt * Math.sin(rad)), crossMs = Math.abs(spdMs * Math.sin(rad));
+      const longKt = spdKt * Math.cos(rad), longMs = spdMs * Math.cos(rad);
+      
+      wCross.value = `${crossMs.toFixed(1)} m/s / ${crossKt.toFixed(1)} kt`;
+      wLong.value = `${Math.abs(longMs).toFixed(1)} m/s / ${Math.abs(longKt).toFixed(1)} kt (${longKt >= 0 ? 'Head' : 'Tail'})`;
+
+      if (muVal === '') {
+        wInfo.innerHTML = isGustUsed ? `Gust used: ${effectiveSpd} ${wUnit.value === 'ms' ? 'm/s' : 'kt'}. Enter MBC to verify.` : 'Enter MBC to verify by table.'; return;
+      }
+      const mu = parseFloat(muVal);
+      const row = TABLE.find(r => mu >= r.muMin && mu <= r.muMax) || TABLE[TABLE.length - 1];
+      
+      const failCross = crossKt > row.limitKt, failTail = longKt < -LIMIT_TAILWIND_KT, isNil = row.code === 0, isFail = failCross || failTail || isNil;
+      if (isFail) { wFieldCross.classList.add('field-red-active'); wFieldLong.classList.add('field-red-active'); }
+      else { wFieldCross.classList.add('field-green-active'); wFieldLong.classList.add('field-green-active'); }
+
+      let infoHtml = `Runway Code: <b>${row.code} (${row.action})</b><br>Crosswind Limit: <b>${row.limitMs} m/s / ${row.limitKt} kt</b>`;
+      if (isGustUsed) infoHtml += `<br><span style="color:#3b82f6;">Gust used: ${effectiveSpd} ${wUnit.value === 'ms' ? 'm/s' : 'kt'}</span>`;
+      if (isNil) infoHtml += `<br><span class="wind-alert">WARNING: MBC < 0.17 (Nil). Landing prohibited!</span>`;
+      else if (failCross) infoHtml += `<br><span class="wind-alert">WARNING: Crosswind exceeds limit!</span>`;
+      if (failTail) infoHtml += `<br><span class="wind-alert">WARNING: Tailwind > ${LIMIT_TAILWIND_KT} kt!</span>`;
+      wInfo.innerHTML = infoHtml;
+    }
+    function resetWind() { [wDir, wRwy, wSpd, wGust, wMu].forEach(el => el.value = ''); wUnit.value = 'ms'; calculateWind(); }
+    [wDir, wRwy, wSpd, wGust, wMu].forEach(input => input.addEventListener('input', calculateWind));
+    wUnit.addEventListener('change', calculateWind);
+
+    // DOW/DOI
+    const DOW_DATA = {
+      "RA-73029": { type: "B757-200", config: "72C", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:61667,doi:44.67,mac:19.95}, "2/6":{dow:61752,doi:45.25,mac:20.29}, "2/7":{dow:61837,doi:44.47,mac:19.85}, "2/8":{dow:61922,doi:44.71,mac:19.99}, "2/9":{dow:62007,doi:45.30,mac:20.33}, "3/5":{dow:61757,doi:43.72,mac:19.42}, "3/6":{dow:61842,doi:44.31,mac:19.76}, "3/7":{dow:61927,doi:43.52,mac:19.32}, "3/8":{dow:62012,doi:43.76,mac:19.46}, "3/9":{dow:62097,doi:44.35,mac:19.80}, "4/5":{dow:61847,doi:42.77,mac:18.89}, "4/6":{dow:61932,doi:43.36,mac:19.23}, "4/7":{dow:62017,doi:42.57,mac:18.79}, "4/8":{dow:62102,doi:42.82,mac:18.93}, "4/9":{dow:62187,doi:43.40,mac:19.27}, "2/1*":{dow:61139,doi:44.38,mac:19.76} }, pantry: { "P1":{kg:-70,iu:-0.12}, "P3":{kg:70,iu:0.12}, "P1RT":{kg:-30,iu:-0.05}, "P2RT":{kg:80,iu:0.14}, "P3RT":{kg:130,iu:0.22}, "O":{kg:-188,iu:-0.32} } },
+      "RA-73071": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:59818,doi:43.48,mac:19.16}, "2/6":{dow:59903,doi:44.06,mac:19.51}, "3/5":{dow:59908,doi:42.53,mac:18.61}, "3/6":{dow:59993,doi:43.12,mac:18.96}, "4/5":{dow:59998,doi:41.58,mac:18.07}, "4/6":{dow:60083,doi:42.17,mac:18.42}, "2/1*":{dow:59288,doi:42.32,mac:18.44} }, pantry: { "P1":{kg:-93,iu:-0.88}, "P3":{kg:107,iu:0.36}, "P1RT":{kg:4,iu:-0.56}, "P2RT":{kg:97,iu:0.33}, "P3RT":{kg:204,iu:0.69}, "O":{kg:-190,iu:-1.21} } },
+      "RA-73072": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:60291,doi:43.29,mac:19.08}, "2/6":{dow:60376,doi:43.87,mac:19.43}, "3/5":{dow:60381,doi:42.34,mac:18.54}, "3/6":{dow:60466,doi:42.93,mac:18.88}, "4/5":{dow:60471,doi:41.39,mac:17.99}, "4/6":{dow:60556,doi:41.98,mac:18.34}, "2/1*":{dow:59761,doi:42.13,mac:18.37} }, pantry: { "P1":{kg:-93,iu:-0.88}, "P3":{kg:107,iu:0.36}, "P1RT":{kg:4,iu:-0.56}, "P2RT":{kg:97,iu:0.33}, "P3RT":{kg:204,iu:0.69}, "O":{kg:-190,iu:-1.21} } },
+      "RA-73074": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:59566,doi:44.29,mac:19.62}, "2/6":{dow:59651,doi:44.87,mac:19.97}, "2/7":{dow:59736,doi:44.09,mac:19.52}, "3/5":{dow:59656,doi:43.34,mac:19.07}, "3/6":{dow:59741,doi:43.92,mac:19.42}, "3/7":{dow:59826,doi:43.14,mac:18.97}, "4/5":{dow:59746,doi:42.39,mac:18.52}, "4/6":{dow:59831,doi:42.98,mac:18.87}, "4/7":{dow:59916,doi:42.19,mac:18.42}, "2/1*":{dow:59036,doi:43.12,mac:18.90} }, pantry: { "P1":{kg:-70,iu:-0.12}, "P3":{kg:70,iu:0.12}, "P1RT":{kg:-30,iu:-0.05}, "P2RT":{kg:80,iu:0.14}, "P3RT":{kg:130,iu:0.22}, "O":{kg:-188,iu:-0.32} } },
+      "RA-73075": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:60291,doi:43.60,mac:19.26}, "2/6":{dow:60376,doi:44.18,mac:19.61}, "2/7":{dow:60461,doi:43.40,mac:19.16}, "3/5":{dow:60381,doi:42.65,mac:18.72}, "3/6":{dow:60466,doi:43.23,mac:19.06}, "3/7":{dow:60551,doi:42.45,mac:18.61}, "4/5":{dow:60471,doi:41.70,mac:18.17}, "4/6":{dow:60556,doi:42.29,mac:18.52}, "4/7":{dow:60641,doi:41.50,mac:18.07}, "2/1*":{dow:59761,doi:42.43,mac:18.55} }, pantry: { "P2":{kg:-70,iu:-0.12}, "P2RT":{kg:80,iu:0.14}, "O":{kg:-188,iu:-0.32} } },
+      "RA-73076": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:59507,doi:39.71,mac:16.92}, "2/6":{dow:59592,doi:40.30,mac:17.28}, "2/7":{dow:59677,doi:39.51,mac:16.82}, "3/5":{dow:59597,doi:38.76,mac:16.37}, "3/6":{dow:59682,doi:39.35,mac:16.73}, "3/7":{dow:59767,doi:38.56,mac:16.28}, "4/5":{dow:59687,doi:37.81,mac:15.83}, "4/6":{dow:59772,doi:38.40,mac:16.18}, "4/7":{dow:59857,doi:37.62,mac:15.73}, "2/1*":{dow:58977,doi:38.58,mac:16.20} }, pantry: { "P2":{kg:-93,iu:-0.88}, "P2RT":{kg:107,iu:0.36}, "O":{kg:-190,iu:-1.21} } },
+      "RA-73077": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:59411,doi:39.87,mac:17.01}, "2/6":{dow:59496,doi:40.46,mac:17.36}, "2/7":{dow:59581,doi:39.68,mac:16.91}, "3/5":{dow:59501,doi:38.93,mac:16.46}, "3/6":{dow:59586,doi:39.51,mac:16.82}, "3/7":{dow:59671,doi:38.73,mac:16.36}, "4/5":{dow:59591,doi:37.98,mac:15.91}, "4/6":{dow:59676,doi:38.57,mac:16.27}, "4/7":{dow:59761,doi:37.78,mac:15.82}, "2/1*":{dow:58881,doi:38.71,mac:16.27} }, pantry: { "P1":{kg:-70,iu:-0.12}, "P3":{kg:70,iu:0.12}, "P1RT":{kg:-30,iu:-0.05}, "P2RT":{kg:80,iu:0.14}, "P3RT":{kg:130,iu:0.22}, "O":{kg:-188,iu:-0.32} } },
+      "RA-73357": { type: "B757-200", config: "238Y", stdFlyaway: 250, iuFactor: 1.08, crews: { "2/5":{dow:59855,doi:43.13,mac:18.96}, "2/6":{dow:59940,doi:43.71,mac:19.31}, "2/7":{dow:60025,doi:42.93,mac:18.86}, "3/5":{dow:59945,doi:42.18,mac:18.41}, "3/6":{dow:60030,doi:42.77,mac:18.76}, "3/7":{dow:60115,doi:41.98,mac:18.31}, "4/5":{dow:60035,doi:41.23,mac:17.86}, "4/6":{dow:60120,doi:41.82,mac:18.21}, "4/7":{dow:60205,doi:41.03,mac:17.76}, "2/1*":{dow:59321,doi:42.00,mac:18.26} }, pantry: { "P1":{kg:-97,iu:-0.84}, "P3":{kg:103,iu:0.40}, "P1RT":{kg:0,iu:-0.51}, "P2RT":{kg:97,iu:0.33}, "P3RT":{kg:200,iu:0.73}, "O":{kg:-194,iu:-1.16} } },
+      "RA-73030": { type: "B767-300ER", config: "336Y", stdFlyaway: 450, iuFactor: 2.39, crews: { "2/8":{dow:89307,doi:51.14,mac:22.83}, "2/9":{dow:89392,doi:51.62,mac:23.10}, "2/10":{dow:89477,doi:52.10,mac:23.37}, "2/11":{dow:89562,doi:52.58,mac:23.65}, "3/8":{dow:89397,doi:50.60,mac:22.52}, "3/9":{dow:89482,doi:51.08,mac:22.80}, "3/10":{dow:89567,doi:51.56,mac:23.07}, "3/11":{dow:89652,doi:52.04,mac:23.34}, "4/8":{dow:89487,doi:50.05,mac:22.22}, "4/9":{dow:89572,doi:50.54,mac:22.49}, "4/10":{dow:89657,doi:51.02,mac:22.77}, "4/11":{dow:89742,doi:51.50,mac:23.04}, "2/1*":{dow:88450,doi:50.86,mac:22.64} }, pantry: { "P1":{kg:-105,iu:0.19}, "P3":{kg:42,iu:-0.03}, "P1RT":{kg:50,iu:-0.16}, "P2RT":{kg:155,iu:-0.02}, "P3RT":{kg:197,iu:-0.05}, "O":{kg:-260,iu:0.21} } },
+      "RA-73032": { type: "B767-300ER", config: "336Y", stdFlyaway: 450, iuFactor: 2.39, crews: { "2/8":{dow:89394,doi:50.39,mac:22.40}, "2/9":{dow:89479,doi:50.21,mac:22.31}, "2/10":{dow:89564,doi:50.03,mac:22.21}, "3/8":{dow:89484,doi:49.85,mac:22.10}, "3/9":{dow:89569,doi:49.67,mac:22.00}, "3/10":{dow:89654,doi:49.49,mac:21.91}, "4/8":{dow:89574,doi:49.31,mac:21.80}, "4/9":{dow:89659,doi:49.13,mac:21.70}, "4/10":{dow:89744,doi:48.95,mac:21.60}, "2/1*":{dow:88539,doi:50.67,mac:22.54} }, pantry: { "P1":{kg:-105,iu:0.19}, "P3":{kg:42,iu:-0.03}, "P1RT":{kg:50,iu:-0.16}, "P2RT":{kg:155,iu:-0.02}, "P3RT":{kg:197,iu:-0.05}, "O":{kg:-260,iu:0.21} } },
+      "RA-73034": { type: "B767-300ER", config: "336Y", stdFlyaway: 450, iuFactor: 2.39, crews: { "2/8":{dow:89458,doi:49.20,mac:21.73}, "2/9":{dow:89543,doi:49.02,mac:21.64}, "2/10":{dow:89628,doi:48.84,mac:21.54}, "3/8":{dow:89548,doi:48.66,mac:21.43}, "3/9":{dow:89633,doi:48.48,mac:21.33}, "3/10":{dow:89718,doi:48.30,mac:21.24}, "4/8":{dow:89638,doi:48.11,mac:21.13}, "4/9":{dow:89723,doi:47.94,mac:21.03}, "4/10":{dow:89808,doi:47.76,mac:20.94}, "2/1*":{dow:88603,doi:49.48,mac:21.86} }, pantry: { "P1":{kg:-105,iu:0.19}, "P3":{kg:42,iu:-0.03}, "P1RT":{kg:50,iu:-0.16}, "P2RT":{kg:155,iu:-0.02}, "P3RT":{kg:197,iu:-0.05}, "O":{kg:-260,iu:0.21} } },
+      "RA-73078": { type: "B767-300ER", config: "336Y", stdFlyaway: 450, iuFactor: 2.39, crews: { "2/8":{dow:89624,doi:49.93,mac:22.15}, "2/9":{dow:89709,doi:50.41,mac:22.43}, "2/10":{dow:89794,doi:50.90,mac:22.70}, "2/11":{dow:89879,doi:51.38,mac:22.97}, "3/8":{dow:89714,doi:49.39,mac:21.85}, "3/9":{dow:89799,doi:49.87,mac:22.13}, "3/10":{dow:89884,doi:50.36,mac:22.40}, "3/11":{dow:89969,doi:50.84,mac:22.67}, "4/8":{dow:89804,doi:48.85,mac:21.55}, "4/9":{dow:89889,doi:49.33,mac:21.82}, "4/10":{dow:89974,doi:49.81,mac:22.10}, "4/11":{dow:90059,doi:50.30,mac:22.37}, "2/1*":{dow:88767,doi:49.65,mac:21.97} }, pantry: { "P1":{kg:-107,iu:0.19}, "P3":{kg:40,iu:-0.03}, "P1RT":{kg:48,iu:-0.16}, "P2RT":{kg:155,iu:-0.02}, "P3RT":{kg:195,iu:-0.05}, "O":{kg:-262,iu:0.21} } },
+      "RA-73079": { type: "B767-300ER", config: "336Y", stdFlyaway: 450, iuFactor: 2.39, crews: { "2/8":{dow:90642,doi:55.81,mac:25.46}, "2/9":{dow:90727,doi:56.29,mac:25.73}, "2/10":{dow:90812,doi:56.77,mac:26.00}, "2/11":{dow:90897,doi:57.25,mac:26.26}, "2/12":{dow:90982,doi:56.82,mac:26.02}, "3/8":{dow:90732,doi:55.26,mac:25.16}, "3/9":{dow:90817,doi:55.75,mac:25.43}, "3/10":{dow:90902,doi:56.23,mac:25.69}, "3/11":{dow:90987,doi:56.71,mac:25.96}, "3/12":{dow:91072,doi:56.28,mac:25.72}, "4/8":{dow:90822,doi:54.72,mac:24.86}, "4/9":{dow:90907,doi:55.21,mac:25.12}, "4/10":{dow:90992,doi:55.69,mac:25.39}, "4/11":{dow:91077,doi:56.17,mac:25.66}, "4/12":{dow:91162,doi:55.73,mac:25.42}, "2/1*":{dow:89785,doi:55.47,mac:25.28} }, pantry: { "P1":{kg:-107,iu:0.19}, "P3":{kg:40,iu:-0.03}, "P1RT":{kg:48,iu:-0.16}, "P2RT":{kg:155,iu:-0.02}, "P3RT":{kg:195,iu:-0.05}, "O":{kg:-262,iu:0.21} } },
+      "RA-73080": { type: "B767-300ER", config: "336Y", stdFlyaway: 450, iuFactor: 2.39, crews: { "2/8":{dow:89384,doi:51.51,mac:23.04}, "2/9":{dow:89469,doi:51.99,mac:23.31}, "2/10":{dow:89554,doi:52.48,mac:23.59}, "2/11":{dow:89639,doi:52.96,mac:23.86}, "2/12":{dow:89724,doi:52.53,mac:23.62}, "3/8":{dow:89474,doi:50.97,mac:22.73}, "3/9":{dow:89559,doi:51.45,mac:23.01}, "3/10":{dow:89644,doi:51.94,mac:23.28}, "3/11":{dow:89729,doi:52.42,mac:23.56}, "3/12":{dow:89814,doi:51.98,mac:23.31}, "4/8":{dow:89564,doi:50.43,mac:22.43}, "4/9":{dow:89649,doi:50.91,mac:22.71}, "4/10":{dow:89734,doi:51.39,mac:22.98}, "4/11":{dow:89819,doi:51.88,mac:23.25}, "4/12":{dow:89904,doi:51.44,mac:23.01}, "2/1*":{dow:88527,doi:51.17,mac:22.82} }, pantry: { "P1":{kg:-105,iu:0.19}, "P3":{kg:42,iu:-0.03}, "P1RT":{kg:50,iu:-0.16}, "P2RT":{kg:155,iu:-0.02}, "P3RT":{kg:197,iu:-0.05}, "O":{kg:-260,iu:0.21} } }
+    };
+
+    const dowRegSelect = document.getElementById('dowReg');
+    const dowCrewSelect = document.getElementById('dowCrew');
+    const dowPantrySelect = document.getElementById('dowPantry');
+    const dowFlyawayInput = document.getElementById('dowFlyaway');
+    const dowValInput = document.getElementById('dowVal');
+    const doiValInput = document.getElementById('doiVal');
+    const dowConfigInput = document.getElementById('dowConfig');
+    const dowInfo = document.getElementById('dowInfo');
+    
+    const dowFieldDow = document.getElementById('dowFieldDow');
+    const dowFieldDoi = document.getElementById('dowFieldDoi');
+
+    function initDowSelect() {
+      const regs = Object.keys(DOW_DATA).sort();
+      regs.forEach(reg => {
+        const opt = document.createElement('option');
+        opt.value = reg;
+        opt.textContent = `${reg} (${DOW_DATA[reg].type})`;
+        dowRegSelect.appendChild(opt);
+      });
+    }
+
+    function populateCrewCodes() {
+      const reg = dowRegSelect.value;
+      
+      dowCrewSelect.innerHTML = '<option value="" disabled selected>Выберите код...</option>';
+      dowPantrySelect.innerHTML = '<option value="" disabled selected>Выберите код...</option>';
+      dowFlyawayInput.value = '';
+      dowValInput.value = ''; doiValInput.value = ''; dowConfigInput.value = '';
+      dowInfo.innerHTML = 'Выберите код экипажа.';
+      dowInfo.className = 'dow-info-text';
+      dowFieldDow.classList.remove('field-green-active');
+      dowFieldDoi.classList.remove('field-green-active');
+
+      if (!reg) return;
+      const data = DOW_DATA[reg];
+
+      Object.keys(data.crews).sort().forEach(code => {
+        const opt = document.createElement('option');
+        opt.value = code; opt.textContent = code;
+        dowCrewSelect.appendChild(opt);
+      });
+
+      Object.keys(data.pantry).sort().forEach(code => {
+        const opt = document.createElement('option');
+        opt.value = code; opt.textContent = code;
+        dowPantrySelect.appendChild(opt);
+      });
+    }
+
+    function calculateDow() {
+      const reg = dowRegSelect.value;
+      const crew = dowCrewSelect.value;
+      const pantry = dowPantrySelect.value;
+      const factFlyawayStr = dowFlyawayInput.value.trim();
+
+      if (!reg || !crew || !pantry) return;
+
+      const data = DOW_DATA[reg];
+      const baseData = data.crews[crew];
+      const pantryData = data.pantry[pantry];
+
+      let finalDow = baseData.dow;
+      let finalDoi = baseData.doi;
+      
+      finalDow += pantryData.kg;
+      finalDoi += pantryData.iu;
+
+      let flyawayWeightDiff = 0;
+      let flyawayIuDiff = 0;
+      let factWeight = 0;
+      
+      if (factFlyawayStr !== '') {
+        factWeight = parseFloat(factFlyawayStr) || 0;
+        flyawayWeightDiff = factWeight - data.stdFlyaway;
+        
+        finalDow += flyawayWeightDiff;
+        
+        const iuPerKg = data.iuFactor / data.stdFlyaway;
+        flyawayIuDiff = flyawayWeightDiff * iuPerKg * -1;
+        
+        finalDoi += flyawayIuDiff;
+      }
+
+      finalDow = Math.round(finalDow);
+      finalDoi = Math.round(finalDoi * 100) / 100;
+
+      dowValInput.value = String(finalDow);
+      doiValInput.value = finalDoi.toFixed(2);
+      dowConfigInput.value = data.config;
+
+      dowFieldDow.classList.add('field-green-active');
+      dowFieldDoi.classList.add('field-green-active');
+
+      let details = `<div class="calc-details active">`;
+      details += `<div><span>Base DOW</span><span>${baseData.dow} kg</span></div>`;
+      details += `<div><span>Pantry (${pantry})</span><span>${pantryData.kg > 0 ? '+' : ''}${pantryData.kg} kg</span></div>`;
+      
+      if (factFlyawayStr !== '') {
+        details += `<div><span>Fly-away (${factWeight} - ${data.stdFlyaway})</span><span>${flyawayWeightDiff > 0 ? '+' : ''}${flyawayWeightDiff} kg</span></div>`;
+      }
+      
+      details += `<div><span>ИТОГО DOW</span><span>${finalDow} kg</span></div>`;
+      details += `<br>`;
+      details += `<div><span>Base DOI</span><span>${baseData.doi.toFixed(2)}</span></div>`;
+      details += `<div><span>Pantry (${pantry})</span><span>${pantryData.iu > 0 ? '+' : ''}${pantryData.iu.toFixed(2)}</span></div>`;
+      
+      if (factFlyawayStr !== '') {
+        details += `<div><span>Fly-away</span><span>${flyawayIuDiff > 0 ? '+' : ''}${flyawayIuDiff.toFixed(2)}</span></div>`;
+      }
+      
+      details += `<div><span>ИТОГО DOI</span><span>${finalDoi.toFixed(2)}</span></div>`;
+      details += `<br><div><span>%MAC</span><span>${baseData.mac.toFixed(2)}</span></div>`;
+      details += `</div>`;
+
+      let info = details;
+      if (crew === "2/1*") {
+        info += `<span class="dow-alert">* Данные включают буфетную тележку O (для ferry flight)</span>`;
+      }
+      
+      dowInfo.innerHTML = info;
+      dowInfo.className = '';
+    }
+
+    function resetDow() {
+      dowRegSelect.value = '';
+      dowCrewSelect.innerHTML = '<option value="" disabled selected>Сначала выберите борт...</option>';
+      dowPantrySelect.innerHTML = '<option value="" disabled selected>Сначала выберите борт...</option>';
+      dowFlyawayInput.value = '';
+      dowValInput.value = ''; doiValInput.value = ''; dowConfigInput.value = '';
+      dowInfo.innerHTML = 'Выберите параметры для расчета.';
+      dowInfo.className = 'dow-info-text';
+      
+      dowFieldDow.classList.remove('field-green-active');
+      dowFieldDoi.classList.remove('field-green-active');
+    }
+
+    // Temp Corr
+    const TEMP_TABLE = {
+      heights: [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 3000],
+      temps: [0, -10, -20, -30, -40, -50],
+      data: [
+        [20, 20, 30, 30, 40, 40, 50, 50, 60, 90, 120, 170], // 0
+        [20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 290], // -10
+        [30, 50, 60, 70, 90, 100, 120, 130, 140, 210, 280, 420], // -20
+        [40, 60, 80, 100, 120, 140, 150, 170, 190, 280, 380, 570], // -30
+        [50, 80, 100, 120, 150, 170, 190, 220, 240, 360, 480, 720], // -40
+        [60, 90, 120, 150, 180, 210, 240, 270, 300, 450, 590, 890]  // -50
+      ]
+    };
+
+    const tcTempInput = document.getElementById('tcTemp');
+    const tcElevInput = document.getElementById('tcElev');
+    
+    const tcInputs = {
+      IAF: document.getElementById('tcIaf'),
+      FAF: document.getElementById('tcFaf'),
+      Step: document.getElementById('tcStep'),
+      MDA: document.getElementById('tcMda'),
+      Missed: document.getElementById('tcMissed')
+    };
+
+    const tcBadges = {
+      IAF: { h: document.getElementById('tcIafHeight'), c: document.getElementById('tcIafCorr'), f: document.getElementById('tcIafFinal') },
+      FAF: { h: document.getElementById('tcFafHeight'), c: document.getElementById('tcFafCorr'), f: document.getElementById('tcFafFinal') },
+      Step: { h: document.getElementById('tcStepHeight'), c: document.getElementById('tcStepCorr'), f: document.getElementById('tcStepFinal') },
+      MDA: { h: document.getElementById('tcMdaHeight'), c: document.getElementById('tcMdaCorr'), f: document.getElementById('tcMdaFinal') },
+      Missed: { h: document.getElementById('tcMissedHeight'), c: document.getElementById('tcMissedCorr'), f: document.getElementById('tcMissedFinal') }
+    };
+
+    const tcInfo = document.getElementById('tcInfo');
+
+    function handleTempInput() {
+      let val = tcTempInput.value;
+      val = val.replace(',', '.');
+      
+      if (val === '' || val === '.') {
+        tcTempInput.value = '-';
+      } else if (!val.startsWith('-')) {
+        tcTempInput.value = '-' + val.replace(/[^0-9.]/g, '');
+      } else {
+        let numPart = val.substring(1).replace(/[^0-9.]/g, '');
+        const firstDot = numPart.indexOf('.');
+        if (firstDot !== -1) {
+          numPart = numPart.slice(0, firstDot + 1) + numPart.slice(firstDot + 1).replace(/\./g, '');
+        }
+        tcTempInput.value = '-' + numPart;
+      }
+      
+      calculateTemp();
+    }
+
+    function interpolateTemp(temp, height) {
+      let t = Math.max(-50, Math.min(0, temp));
+      let h = Math.max(200, Math.min(3000, height));
+
+      let tIdx1 = 0, tIdx2 = 0, tWeight = 0;
+      for (let i = 0; i < TEMP_TABLE.temps.length - 1; i++) {
+        if (t <= TEMP_TABLE.temps[i] && t >= TEMP_TABLE.temps[i+1]) {
+          tIdx1 = i; tIdx2 = i+1;
+          tWeight = (t - TEMP_TABLE.temps[i]) / (TEMP_TABLE.temps[i+1] - TEMP_TABLE.temps[i]);
+          break;
+        }
+      }
+      if (t <= -50) { tIdx1 = 5; tIdx2 = 5; tWeight = 0; }
+
+      let hIdx1 = 0, hIdx2 = 0, hWeight = 0;
+      for (let i = 0; i < TEMP_TABLE.heights.length - 1; i++) {
+        if (h >= TEMP_TABLE.heights[i] && h <= TEMP_TABLE.heights[i+1]) {
+          hIdx1 = i; hIdx2 = i+1;
+          hWeight = (h - TEMP_TABLE.heights[i]) / (TEMP_TABLE.heights[i+1] - TEMP_TABLE.heights[i]);
+          break;
+        }
+      }
+      if (h >= 3000) { hIdx1 = TEMP_TABLE.heights.length - 1; hIdx2 = hIdx1; hWeight = 0; }
+
+      const v00 = TEMP_TABLE.data[tIdx1][hIdx1];
+      const v01 = TEMP_TABLE.data[tIdx1][hIdx2];
+      const v10 = TEMP_TABLE.data[tIdx2][hIdx1];
+      const v11 = TEMP_TABLE.data[tIdx2][hIdx2];
+
+      const top = v00 + (v01 - v00) * hWeight;
+      const bot = v10 + (v11 - v10) * hWeight;
+      const result = top + (bot - top) * tWeight;
+
+      return Math.round(result);
+    }
+
+    function calculateTemp() {
+      const tempVal = tcTempInput.value.trim();
+      const elevVal = tcElevInput.value.trim();
+
+      Object.values(tcBadges).forEach(b => {
+        b.h.textContent = 'Height: —';
+        b.h.classList.remove('active');
+        b.c.textContent = 'Corr: 0 ft';
+        b.c.classList.remove('active');
+        b.f.textContent = '—';
+        b.f.classList.add('empty');
+      });
+
+      if (tempVal === '' || tempVal === '-') {
+        tcInfo.innerHTML = 'Введите температуру.';
+        tcInfo.className = 'temp-info-text';
+        return;
+      }
+
+      const temp = parseFloat(tempVal);
+      if (isNaN(temp)) {
+        tcInfo.innerHTML = 'Некорректная температура.';
+        tcInfo.className = 'temp-info-text';
+        return;
+      }
+
+      if (temp >= 0) {
+        tcInfo.innerHTML = 'Температура 0°C и выше. Поправка не требуется.';
+        tcInfo.className = 'temp-info-text';
+        return;
+      }
+
+      if (elevVal === '') {
+        tcInfo.innerHTML = 'Введите высоту аэродрома.';
+        tcInfo.className = 'temp-info-text';
+        return;
+      }
+      
+      const elev = parseFloat(elevVal) || 0;
+      let hasValues = false;
+
+      Object.keys(tcInputs).forEach(key => {
+        const input = tcInputs[key];
+        const badge = tcBadges[key];
+        const val = input.value.trim();
+
+        if (val !== '') {
+          const publishedAlt = parseFloat(val) || 0;
+          const height = publishedAlt - elev;
+          
+          if (height > 0) {
+            badge.h.textContent = `Height: ${Math.round(height)} ft`;
+            badge.h.classList.add('active');
+            
+            const corr = interpolateTemp(temp, height);
+            badge.c.textContent = `Corr: +${corr} ft`;
+            badge.c.classList.add('active');
+            
+            const finalAlt = publishedAlt + corr;
+            badge.f.textContent = `${finalAlt} ft`;
+            badge.f.classList.remove('empty');
+            hasValues = true;
+          }
+        }
+      });
+
+      if (hasValues) {
+        tcInfo.innerHTML = `Поправка для температуры ${temp}°C (высота аэродрома ${elev} ft).`;
+        tcInfo.className = 'temp-info-text';
+      } else {
+        tcInfo.innerHTML = 'Введите опубликованные высоты (больше высоты аэродрома).';
+        tcInfo.className = 'temp-info-text';
+      }
+    }
+
+    function resetTemp() {
+      tcTempInput.value = '-';
+      tcElevInput.value = '';
+      Object.values(tcInputs).forEach(input => input.value = '');
+      calculateTemp();
+    }
+
+    tcTempInput.addEventListener('input', handleTempInput);
+    tcElevInput.addEventListener('input', calculateTemp);
+    Object.values(tcInputs).forEach(input => input.addEventListener('input', calculateTemp));
+
+    // Инициализация
+    initDowSelect();
+    resetWind();
+    calculateWind();
+    resetSingle();
+    resetDouble();
+    resetDow();
+    resetTemp();
+
+  </script>
+</body>
+</html>
